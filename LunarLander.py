@@ -107,7 +107,7 @@ class LunarLander():
             self.rocket.step(action)
         
         # Check if game is over
-        if self.rocket.y <= 0:
+        if self.rocket.y <= 0 or self.rocket.y > 600 or abs(self.rocket.x) > 400:
             self.game_over = True
             # Criteria to win the game
             if self.rocket.yspeed <= 20 and \
