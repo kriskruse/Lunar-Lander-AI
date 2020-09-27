@@ -3,7 +3,7 @@ from agent_q import DQN, Network
 import torch
 
 model = Network()
-model.load_state_dict(torch.load('./weights/agent271440.tar'))
+model.load_state_dict(torch.load('./weights/agent271621.tar'))
 
 env = LunarLander()
 env.reset()

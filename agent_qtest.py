@@ -9,13 +9,13 @@ import datetime
 
 
 k_x = 100
-k_y = 10
-k_yspeed = 25
-k_xspeed = 25
+k_y = 100
+#k_yspeed = 25
+#k_xspeed = 25
 
 
 DISCOUNT = 0.99
-BATCH_SIZE = 512
+BATCH_SIZE = 100
 EPSILON = 1
 EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
@@ -101,13 +101,15 @@ class DQN:
     def get_reward(state, done):
         x, y, xspeed, yspeed = state
 
-        if yspeed <= 20 and abs(x) <= 20 and abs(xspeed) <= 20:
+        if abs(yspeed) <= 20 and abs(x) <= 20 and abs(xspeed) <= 20 and abs(y):
             return 1000
 
         if done == True:
             return -5
         else:
-            return -1 + 600/y*k_y + (400/max(abs(x),0.1))*k_x + 140/max(abs(yspeed),18)*k_yspeed + 140/max(abs(xspeed),18)*k_xspeed
+            return -1 + 600/y*k_y + (400/max(abs(x),0.1))*k_x   # + 140/max(abs(yspeed),18)*k_yspeed + 140/max(abs(xspeed),18)*k_xspeed
+
+
         # max_distance = np.sqrt(400 ** 2 + 600 ** 2)
         # reward = (max_distance / np.sqrt(x ** 2 + y ** 2)) * k_distance + done*k_lost + 140/max(abs(yspeed),18)*k_speed + 140/max(abs(xspeed),18) * k_speed
         # reward = 1/max(abs(x), 0.0001)*10 + 1/max(abs(y), 0.0001)*10 + 140/max(abs(yspeed),18)*k_speed + 140/max(abs(xspeed),18) * k_speed
