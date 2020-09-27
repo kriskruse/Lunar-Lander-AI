@@ -15,7 +15,7 @@ k_y = 100
 
 
 DISCOUNT = 0.99
-BATCH_SIZE = 100
+BATCH_SIZE = 500
 EPSILON = 1
 EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
@@ -29,6 +29,8 @@ TRAIN_FROM_PRETRAINED = False
 AGENT_PATH = ''
 STABLE_AGENT_PATH = ''
 
+print(torch.cuda.device_count())
+
 
 class Network(nn.Module):
     def __init__(self):
@@ -39,6 +41,8 @@ class Network(nn.Module):
         self.fc4 = nn.Linear(100, 6)
 
     def forward(self, x):
+        x = x.to(torch.device("cuda:0"))
+
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
@@ -53,9 +57,12 @@ class DQN:
     def __init__(self):
         self.criterion = F.mse_loss
         self.model = Network()
+        self.model.to(torch.device("cuda:0"))
         self.optimizer = optim.AdamW(self.model.parameters(), lr=0.001)
 
     def train_once(self, state, action, reward, model_input):
+        model_input = model_input.to(torch.device("cuda:0"))
+
         predictions = self.model(model_input)
 
         next_state = self.get_next_state(state, action)
@@ -73,6 +80,7 @@ class DQN:
 
         q_values[action] = new_q
         y = q_values
+        y = y.to(torch.device("cuda:0"))
 
         loss = self.criterion(predictions, y)
         # print(loss)
@@ -89,6 +97,8 @@ class DQN:
 
         for batch in dataloader:
             x, y = batch
+            y = y.to(torch.device("cuda:0"))
+            x = x.to(torch.device("cuda:0"))
 
             predictions = self.model(x)
             loss = self.criterion(predictions, y)
@@ -98,16 +108,17 @@ class DQN:
             self.optimizer.step()
 
     @staticmethod
-    def get_reward(state, done):
+    def get_reward(state, done, fuel):
         x, y, xspeed, yspeed = state
 
-        if abs(yspeed) <= 20 and abs(x) <= 20 and abs(xspeed) <= 20 and abs(y):
-            return 1000
+        if abs(yspeed) <= 20 and abs(x) <= 20 and abs(xspeed) <= 20 and y <= 30:
+            return 100000
 
-        if done == True:
-            return -5
+        if done == True or fuel == 0:
+            return -500000
         else:
-            return -1 + 600/y*k_y + (400/max(abs(x),0.1))*k_x   # + 140/max(abs(yspeed),18)*k_yspeed + 140/max(abs(xspeed),18)*k_xspeed
+            return (400 - abs(x))*5 + (600 - abs(y))*5
+           # return -1 + (400/max(abs(x),0.1))*k_x   # + 140/max(abs(yspeed),18)*k_yspeed + 140/max(abs(xspeed),18)*k_xspeed
 
 
         # max_distance = np.sqrt(400 ** 2 + 600 ** 2)
@@ -151,8 +162,8 @@ class DQN:
         return x, y, xspeed, yspeed
 
     @staticmethod
-    def update_replay_memory(state, action, reward, model_input, done):
-        replay_memory.append((state, action, reward,  model_input, done))
+    def update_replay_memory(state, action, reward, model_input, done, fuel):
+        replay_memory.append((state, action, reward,  model_input, done, fuel))
 
     @staticmethod
     def get_model_input(state):
@@ -198,6 +209,7 @@ class Dataset(torch.utils.data.Dataset):
         reward = replay_memory[i][2]
         model_input = replay_memory[i][3]
         done = replay_memory[i][4]
+        fuel = replay_memory[i][5]
 
         current_q_values = agent.model(model_input)
 
@@ -232,6 +244,9 @@ if __name__ == '__main__':
         agent = DQN()
         stable_agent = DQN()
 
+    #GPU CHECK
+    print(next(agent.model.parameters()).is_cuda)
+
     env = LunarLander()
     env.reset()
     exit_program = False
@@ -243,6 +258,7 @@ if __name__ == '__main__':
         # env.render()
 
         (x, y, xspeed, yspeed), reward, done = env.step((boost, left, right))
+        fuel = reward
         state = (x, y, xspeed, yspeed)
         model_input = agent.get_model_input(state)
 
@@ -256,9 +272,9 @@ if __name__ == '__main__':
             EPSILON *= EPSILON_DECAY
             EPSILON = max(MIN_EPSILON, EPSILON)
 
-        reward = agent.get_reward(state, done)
+        reward = agent.get_reward(state, done, fuel)
 
-        agent.update_replay_memory(state, action, reward, model_input, done)
+        agent.update_replay_memory(state, action, reward, model_input, done, fuel)
 
         # make sure weights are being updated
         # a = list(model.model.parameters())[0].clone()

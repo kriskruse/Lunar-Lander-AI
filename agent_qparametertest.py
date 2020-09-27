@@ -9,13 +9,13 @@ import datetime
 
 
 k_x = 100
-k_y = 10
-k_yspeed = 25
-k_xspeed = 25
+k_y = 100
+#k_yspeed = 25
+#k_xspeed = 25
 
 
 DISCOUNT = 0.99
-BATCH_SIZE = 500
+BATCH_SIZE = 100
 EPSILON = 1
 EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
@@ -29,6 +29,8 @@ TRAIN_FROM_PRETRAINED = False
 AGENT_PATH = ''
 STABLE_AGENT_PATH = ''
 
+print(torch.cuda.device_count())
+
 
 class Network(nn.Module):
     def __init__(self):
@@ -39,6 +41,8 @@ class Network(nn.Module):
         self.fc4 = nn.Linear(100, 6)
 
     def forward(self, x):
+        x = x.to(torch.device("cuda"))
+
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
@@ -53,9 +57,12 @@ class DQN:
     def __init__(self):
         self.criterion = F.mse_loss
         self.model = Network()
+        self.model.to(torch.device("cuda"))
         self.optimizer = optim.AdamW(self.model.parameters(), lr=0.001)
 
     def train_once(self, state, action, reward, model_input):
+        model_input = model_input.to(torch.device("cuda"))
+
         predictions = self.model(model_input)
 
         next_state = self.get_next_state(state, action)
@@ -73,6 +80,7 @@ class DQN:
 
         q_values[action] = new_q
         y = q_values
+        y = y.to(torch.device("cuda"))
 
         loss = self.criterion(predictions, y)
         # print(loss)
@@ -89,6 +97,8 @@ class DQN:
 
         for batch in dataloader:
             x, y = batch
+            y = y.to(torch.device("cuda"))
+            x = x.to(torch.device("cuda"))
 
             predictions = self.model(x)
             loss = self.criterion(predictions, y)
@@ -101,13 +111,14 @@ class DQN:
     def get_reward(state, done):
         x, y, xspeed, yspeed = state
 
-        if yspeed <= 20 and abs(x) <= 20 and abs(xspeed) <= 20:
-            return 1000
+        if abs(yspeed) <= 20 and abs(x) <= 20 and abs(xspeed) <= 20:
+            return 100000
 
         if done == True:
-            return -5
+            return -5000
         else:
-            return -1 + 600/y*k_y + (400/max(abs(x),0.1))*k_x + 140/max(abs(yspeed),18)*k_yspeed + 140/max(abs(xspeed),18)*k_xspeed
+            return -1 + (400 - abs(x)) + (550 - abs(y))
+           # return -1 + (400/max(abs(x),0.1))*k_x   # + 140/max(abs(yspeed),18)*k_yspeed + 140/max(abs(xspeed),18)*k_xspeed
 
 
         # max_distance = np.sqrt(400 ** 2 + 600 ** 2)
@@ -231,6 +242,9 @@ if __name__ == '__main__':
     else:
         agent = DQN()
         stable_agent = DQN()
+
+    #GPU CHECK
+    print(next(agent.model.parameters()).is_cuda)
 
     env = LunarLander()
     env.reset()

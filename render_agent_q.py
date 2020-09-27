@@ -3,7 +3,8 @@ from agent_q import DQN, Network
 import torch
 
 model = Network()
-model.load_state_dict(torch.load('./weights/agent271621.tar'))
+model.load_state_dict(torch.load('./weights/agent271822.tar'))  #random test 27189, Hård parameter test u fuel 27184, hård para test med fuel 271822
+# god rand agent271739
 
 env = LunarLander()
 env.reset()
