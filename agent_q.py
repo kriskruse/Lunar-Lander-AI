@@ -25,9 +25,9 @@ MIN_MEMORY_SIZE = 1000
 TRAIN_AFTER = 5
 RENDER_AFTER = 100
 SAVE_EVERY = 100
-TRAIN_FROM_PRETRAINED = True
-AGENT_PATH = './weights/agent271010.tar'
-STABLE_AGENT_PATH = './weights/stable_agent271010.tar'
+TRAIN_FROM_PRETRAINED = False
+AGENT_PATH = ''
+STABLE_AGENT_PATH = ''
 
 
 class Network(nn.Module):
