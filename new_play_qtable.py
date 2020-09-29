@@ -60,7 +60,7 @@ def correct_state(state):
     return x, y, xspeed, yspeed
 
 
-q_table = np.load('q_tables/table29244.npy')
+q_table = np.load('q_tables/qtable292139.npy')
 
 env = LunarLander()
 env.reset()

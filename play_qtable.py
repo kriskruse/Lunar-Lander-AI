@@ -1,4 +1,3 @@
-import numpy
 from easy_env import *
 LOWS = np.array([-400, 0, -140, -140])
 DISCRETE_SIZE = np.array([20, 30, 10, 10])

@@ -1,9 +1,9 @@
 from LunarLander import *
-from agent_q import DQN, Network
+from agent_q_correctParameter_Test import DQN, Network
 import torch
 
 model = Network()
-model.load_state_dict(torch.load('./weights/agent271822.tar'))  #random test 27189, Hård parameter test u fuel 27184, hård para test med fuel 271822
+model.load_state_dict(torch.load('./weights/agent281639.tar'))  #random test 27189, Hård parameter test u fuel 27184, hård para test med fuel 271822
 # god rand agent271739
 
 env = LunarLander()

@@ -210,5 +210,8 @@ class LunarLander():
     def close(self):
         pygame.quit()
 
+boost = False
+left = False
+right = False
 
 

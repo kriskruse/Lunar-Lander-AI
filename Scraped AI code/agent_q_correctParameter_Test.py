@@ -51,7 +51,7 @@ class DQN:
         self.model = Network()
         self.target_model = Network()
         self.target_update_counter = 0
-        self.optimizer = optim.Adam(self.model.parameters(), lr=5e-5)
+        self.optimizer = optim.Adam(self.model.parameters())
 
     def train(self, replay_memory):
         if len(replay_memory) < MIN_MEMORY_SIZE:
@@ -103,13 +103,11 @@ class DQN:
         if done:
             return -5
         else:
-            x_reward = 400 / max(abs(x), 1) / 400
-            y_reward = 600 / max(y, 1) / 600
-            xspeed_reward = 200 / max(abs(xspeed), 10) / 20
-            if yspeed >= 0:
-                yspeed_reward = 110 / max(yspeed, 10) / 11
-            else:
-                yspeed_reward = yspeed / 140
+            x_reward = (400 - abs(x))/20
+            y_reward = (600 - y)/30
+            xspeed_reward = (200-abs(xspeed))/10
+            yspeed_reward = (110-abs(yspeed))/5.5
+
 
             return x_reward + y_reward + xspeed_reward + yspeed_reward
 

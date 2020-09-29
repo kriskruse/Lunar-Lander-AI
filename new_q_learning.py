@@ -13,8 +13,8 @@ DISCRETE_SIZE = np.array([20, 30, 7, 7])
 HIGHS = np.array([400, 600, 140, 140])
 LOWS = np.array([-400, 0, -140, -140])
 win_size = (HIGHS - LOWS) / DISCRETE_SIZE
-# q_table = np.random.uniform(-2, 0, size=(20, 30, 7, 7, 6))
-q_table = np.load('./q_tables/qtable292055.npy')
+q_table = np.random.uniform(-2, 0, size=(20, 30, 7, 7, 6))
+#q_table = np.load('./q_tables/qtable292055.npy')
 
 time_created = datetime.datetime.now().timetuple()
 

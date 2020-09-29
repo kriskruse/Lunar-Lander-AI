@@ -29,18 +29,18 @@ STABLE_AGENT_PATH = './weights/stable_agent272036.tar'
 class Network(nn.Module):
     def __init__(self):
         super().__init__()
-        self.fc1 = nn.Linear(4, 25)
-        self.fc2 = nn.Linear(25, 25)
-        self.fc3 = nn.Linear(25, 25)
-        self.fc4 = nn.Linear(25, 6)
+        self.fc1 = nn.Linear(4, 20)
+        self.fc2 = nn.Linear(20, 20)
+        #self.fc3 = nn.Linear(25, 25)
+        self.fc4 = nn.Linear(20, 6)
 
     def forward(self, x):
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
         x = F.relu(x)
-        x = self.fc3(x)
-        x = F.relu(x)
+        #x = self.fc3(x)
+        #x = F.relu(x)
         x = self.fc4(x)
         return x
 
@@ -51,7 +51,7 @@ class DQN:
         self.model = Network().cuda()
         self.target_model = Network().cuda()
         self.target_update_counter = 0
-        self.optimizer = optim.Adam(self.model.parameters(), lr=5e-5)
+        self.optimizer = optim.Adam(self.model.parameters())
 
     def train(self, replay_memory):
         if len(replay_memory) < MIN_MEMORY_SIZE:
@@ -113,7 +113,7 @@ class DQN:
             else:
                 yspeed_reward = yspeed / 140
 
-            return x_reward + y_reward + xspeed_reward + yspeed_reward
+            return x_reward * y_reward * xspeed_reward * yspeed_reward
 
     @staticmethod
     def get_next_state(state, action):
@@ -214,6 +214,7 @@ if __name__ == '__main__':
             action = 0
         else:
             model_input = agent.get_model_input(state)
+            model_input = model_input.cuda()
 
             if random.random() > EPSILON:
                 q_values = agent.model(model_input)

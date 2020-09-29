@@ -1,6 +1,6 @@
-import numpy as np
-from easy_env import *
 import datetime
+
+from easy_env import *
 
 LEARNING_RATE = 0.1
 DISCOUNT = 0.95
