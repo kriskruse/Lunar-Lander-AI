@@ -20,7 +20,7 @@ time_created = datetime.datetime.now().timetuple()
 
 
 def correct_state(state):
-    x, y, xspeed, yspeed = state
+    x, y, xspeed, yspeed, fuel = state
     if x < -390:
         x = -390
     elif x > 390:
@@ -40,8 +40,11 @@ def correct_state(state):
         yspeed = -140
     elif yspeed >= 140:
         yspeed = 139
+    if fuel > 99:
+        fuel = 99
 
-    return x, y, xspeed, yspeed
+
+    return x, y, xspeed, yspeed, fuel
 
 
 def get_discrete_state(state):
@@ -49,14 +52,15 @@ def get_discrete_state(state):
     return tuple(discrete_state.astype(np.int))
 
 
-def get_reward(state, fuel, done):
-    x, y, xspeed, yspeed = state
+def get_reward(state, done):
+    x, y, xspeed, yspeed, fuel = state
 
     if done:
         if 9 <= x <= 10 and y <= 0:
             return 200
         else:
-            return -100
+            ended_where_Reward = -100 - abs(x)**1.55
+            return ended_where_Reward
     else:
         distance_reward = -100 * np.sqrt(x ** 2 + y ** 2)
         speed_reward = -100 * np.sqrt(xspeed ** 2 + yspeed ** 2)
@@ -109,8 +113,10 @@ if __name__ == '__main__':
             print(f'models saved with id: {time_created[2]}{time_created[3]}{time_created[4]}')
         env.reset()
 
-        state, fuel, done = env.step((boost, left, right))
+        (x, y,   xspeed,    yspeed), fuel, done = env.step((boost, left, right))
+        state = (x, y,   xspeed, yspeed, fuel)
         state = correct_state(state)
+
         discrete_state = get_discrete_state(state)
 
         while not done:
@@ -125,11 +131,12 @@ if __name__ == '__main__':
                 action = np.random.randint(0, 5)
             boost, left, right = get_movement_variables(action)
 
-            new_state, fuel, done = env.step((boost, left, right))
+            (x, y,   xspeed, yspeed), fuel, done = env.step((boost, left, right))
+            new_state = (x, y,   xspeed, yspeed, fuel)
             new_state = correct_state(state)
             new_discrete_state = get_discrete_state(new_state)
 
-            reward = get_reward(new_discrete_state, fuel, done)
+            reward = get_reward(new_discrete_state, done)
             rewards.append(reward)
             if reward == 200:
                 wins += 1

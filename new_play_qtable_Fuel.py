@@ -1,8 +1,8 @@
 import numpy
-from constricted_env import *
-DISCRETE_SIZE = np.array([20, 30, 7, 7])
-HIGHS = np.array([400, 600, 140, 140])
-LOWS = np.array([-400, 0, -140, -140])
+from constricted_fuel_env import *
+DISCRETE_SIZE = np.array([20, 30, 7, 7, 2])
+HIGHS = np.array([400, 600, 140, 140, 100])
+LOWS = np.array([-400, 0, -140, -140, 0])
 win_size = (HIGHS - LOWS)/DISCRETE_SIZE
 def get_discrete_state(state):
     discrete_state = (state - LOWS)/win_size
@@ -36,7 +36,7 @@ def get_movement_variables(action):
     return left, boost, right
 
 def correct_state(state):
-    x, y, xspeed, yspeed = state
+    x, y, xspeed, yspeed, fuel = state
     if x < -390:
         x = -390
     elif x > 390:
@@ -56,8 +56,11 @@ def correct_state(state):
         yspeed = -140
     elif yspeed >= 140:
         yspeed = 139
+    if fuel > 99:
+        fuel = 99
 
-    return x, y, xspeed, yspeed
+
+    return x, y, xspeed, yspeed, fuel
 
 
 q_table = np.load('q_tables/qtable292234.npy')
@@ -67,8 +70,8 @@ env.reset()
 exit_program = False
 while not exit_program:
     env.render()
-    (x, y, xspeed, yspeed), reward, done = env.step((boost, left, right))
-    state = (x, y, xspeed, yspeed)
+    (x, y, xspeed, yspeed), fuel, done = env.step((boost, left, right))
+    state = (x, y, xspeed, yspeed, fuel)
     state = correct_state(state)
     discrete_state = get_discrete_state(state)
     action = np.argmax(q_table[discrete_state])

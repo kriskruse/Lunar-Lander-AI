@@ -12,7 +12,8 @@ def get_reward(state, done):
         if 9 <= x <= 10 and y <= 0:
             return 200
         else:
-            return -100
+            ended_where_Reward = -100 - abs(x) ** 1.55
+            return ended_where_Reward
     else:
         distance_reward = -100 * np.sqrt(x ** 2 + y ** 2)
         speed_reward = -100 * np.sqrt(xspeed ** 2 + yspeed ** 2)
@@ -169,7 +170,7 @@ class LunarLander():
 
         # Draw text
         values = [self.rocket.y, self.rocket.x, self.rocket.yspeed, self.rocket.xspeed, self.rocket.fuel,
-                  get_reward((self.rocket.y, self.rocket.x, self.rocket.yspeed, self.rocket.xspeed),self.game_over)]
+                  get_reward((self.rocket.x, self.rocket.y, self.rocket.yspeed, self.rocket.xspeed),self.game_over)]
         labels = ["Vertical distance", "Horizontal distance", "Vertical speed", "Horzontal speed", "Fuel", "Reward"]
         colors = [self.textColor,
                   self.goodColor if abs(self.rocket.x) <= 20 else self.badColor,
