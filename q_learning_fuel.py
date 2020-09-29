@@ -108,6 +108,7 @@ if __name__ == '__main__':
             print(f"Episodes played: {episode}")
             print(f"Wins earned: {wins}")
             print(f"Average reward: {np.mean(rewards)}")
+            print(f"Lenght og rewards:{len(rewards)}")
             rewards = []
             np.save(f'./q_tables/qtable{time_created[2]}{time_created[3]}{time_created[4]}.npy', q_table)
             print(f'models saved with id: {time_created[2]}{time_created[3]}{time_created[4]}')
