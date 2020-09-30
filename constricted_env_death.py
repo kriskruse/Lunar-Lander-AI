@@ -12,7 +12,8 @@ def get_reward(state, done):
         if 9 <= x <= 10 and y <= 0:
             return 200
         else:
-            return -100
+            ended_where_Reward = -100 - (abs(x)**1.55 + abs(y)**2)
+            return ended_where_Reward
     else:
         distance_reward = -100 * np.sqrt(x ** 2 + y ** 2)
         speed_reward = -100 * np.sqrt(xspeed ** 2 + yspeed ** 2)
@@ -97,13 +98,13 @@ class Rocket(pygame.sprite.Sprite):
                 self.xspeed -= 2
 
         # # Update fuel
-        # if self.boost:
-        #     self.fuel -= .4
-        # if self.left:
-        #     self.fuel -= .2
-        # if self.right:
-        #     self.fuel -= .2
-        # self.fuel = max(0, self.fuel)
+        if self.boost:
+            self.fuel -= .4
+        if self.left:
+             self.fuel -= .2
+        if self.right:
+             self.fuel -= .2
+        self.fuel = max(0, self.fuel)
 
 
 class LunarLander():
