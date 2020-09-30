@@ -73,6 +73,7 @@ while not exit_program:
 
     if abs(x) <= 20 and abs(xspeed) <= 20 and abs(yspeed) <= 20:
         won += 1
+        print(x, y, env.rocket.fuel)
     else:
         lost += 1
     print(reward)
