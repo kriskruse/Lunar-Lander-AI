@@ -1,5 +1,4 @@
-import numpy
-from constricted_env_death import *
+from constricted_fuel_env import *
 DISCRETE_SIZE = np.array([20, 30, 7, 7, 2])
 HIGHS = np.array([400, 600, 140, 140, 100])
 LOWS = np.array([-400, 0, -140, -140, 0])
@@ -63,7 +62,7 @@ def correct_state(state):
     return x, y, xspeed, yspeed, fuel
 
 
-q_table = np.load('q_tables/qtable292333.npy')
+q_table = np.load('q_tables/qtable292234.npy')
 
 env = LunarLander()
 env.reset()
