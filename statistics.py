@@ -16,4 +16,4 @@ def mean_confidence_interval(array):
     confidence_interval = (mean - critical_value * standard_error, mean + critical_value * standard_error)
     return confidence_interval
 
-print(mean_confidence_interval())
+print(mean_confidence_interval(rewards))
