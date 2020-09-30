@@ -14,64 +14,45 @@ from LunarLander import *
 env = LunarLander()
 env.reset()
 exit_program = False
+episodes = 10000
+render = True
 
-while not exit_program:
+# while not exit_program:
+won = 0
+lost = 0
+for i in range(episodes):
+    env.reset()
+    done = False
+    while not done:
+        if render:
+            env.render()
+        (x, y, xspeed, yspeed), reward, done = env.step((boost, left, right))
 
-    env.render()
-    (x, y, xspeed, yspeed), reward, done = env.step((boost, left, right))
-
-    boost = False
-    left = False
-    right = False
-
-    max_speed = 40
-    x_limit = 20
-
-
-    if xspeed > max_speed:
-        right = True
-    if xspeed < -max_speed:
-        left = True
-
-    if x > x_limit and not left and xspeed > -20 * max(abs(x) // 50, 1):
-        right = True
-    elif x < -x_limit and not right and xspeed < 20 * max(abs(x) // 50,1):
-        left = True
-
-    if -15 <= x <= 15:
+        boost = False
         left = False
         right = False
-        if xspeed >= 20:
+
+        max_speed = min(40, max(abs(x), 10))
+        x_limit = 15
+
+        if xspeed > max_speed:
             right = True
-        elif xspeed <= -20:
+        if xspeed < -max_speed:
+            left = True
+
+        if x > x_limit and not left:
+            right = True
+        elif x < - x_limit and not right:
             left = True
 
 
-    # if y < 150:
-    #     if x > x_limit:
-    #         right = True
-    #         left = False
-    #     elif x < -x_limit:
-    #         left = True
-    #         right = False
+        # maksimal y fart
+        if yspeed > 60:
+            boost = True
 
-    # x er positiv til højre for platformen og negativ til venstre for
-    # xspeed er positiv gående mod højre og negativ gående mod venstre
-
-
-
-    # maksimal y fart
-    if yspeed > 60:
-        boost = True
-
-    # boost grænse
-    if y < 120:
-        boost = True
-
-
-
-
-
+        # boost grænse
+        if y < 120:
+            boost = True
 
         # Process game events
         for event in pygame.event.get():
@@ -95,6 +76,12 @@ while not exit_program:
                     left = False
                     right = False
                     env.reset()
-
-
+    if abs(x) <= 20 and abs(xspeed) <= 20 and abs(yspeed) <= 20:
+        won += 1
+    else:
+        lost += 1
+print(won, lost)
 env.close()
+
+# x er positiv til højre for platformen og negativ til venstre for
+# xspeed er positiv gående mod højre og negativ gående mod venstre
