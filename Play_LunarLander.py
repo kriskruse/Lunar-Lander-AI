@@ -10,7 +10,7 @@
 #    q / ESC : Quit
 
 from LunarLander import *
-
+import time
 env = LunarLander()
 env.reset()
 exit_program = False
@@ -19,6 +19,7 @@ lost = 0
 while not exit_program:
     done = False
     env.reset()
+
     while not done:
         env.render()
         (x, y, xspeed, yspeed), reward, done = env.step((boost, left, right))
@@ -74,6 +75,7 @@ while not exit_program:
         won += 1
     else:
         lost += 1
+    print(reward)
     print(f"Wins: {won}")
     print(f"Losses: {lost}")
 

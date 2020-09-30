@@ -117,7 +117,7 @@ class LunarLander():
         
         # return observation, reward, done
         reward = self.rocket.fuel if self.won else 0
-        return ((self.rocket.x, self.rocket.y, self.rocket.xspeed, self.rocket.yspeed), reward, self.game_over)                
+        return ((self.rocket.x, self.rocket.y, self.rocket.xspeed, self.rocket.yspeed), self.rocket.fuel, self.game_over)
                 
     def init_render(self):
         self.screen = pygame.display.set_mode([800, 600])

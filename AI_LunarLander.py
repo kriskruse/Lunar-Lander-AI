@@ -10,19 +10,24 @@
 #    q / ESC : Quit
 
 from LunarLander import *
+import time
+import numpy
 
 env = LunarLander()
 env.reset()
 exit_program = False
-episodes = 10000
-render = True
-
+episodes = 100000
+render = False
 # while not exit_program:
 won = 0
 lost = 0
+end_position = []
+rewards = []
+time_taken = []
 for i in range(episodes):
     env.reset()
     done = False
+    start_time = time.time()
     while not done:
         if render:
             env.render()
@@ -80,8 +85,22 @@ for i in range(episodes):
         won += 1
     else:
         lost += 1
-print(won, lost)
+
+    time_taken.append((time.time() - start_time)*1000)
+
+    rewards.append(reward)
+    end_position.append((x,y))
+np.save('won.npy', won)
+np.save('lost.npy', lost)
+np.save('rewards.npy', rewards)
+np.save('time_taken.npy', time_taken)
+np.save('end_position.npy', end_position)
+
 env.close()
 
 # x er positiv til højre for platformen og negativ til venstre for
 # xspeed er positiv gående mod højre og negativ gående mod venstre
+
+# hvor lang tid tager det
+# gennemsnitlig score
+# hvor præcist den lander
