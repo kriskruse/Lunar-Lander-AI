@@ -1,10 +1,11 @@
 import numpy as np
 
-rewards = np.load('')
-time_taken = np.load('')
-won = np.load('')
-lost = np.load('')
-end_position = np.load('')
+rewards = np.load('rewards.npy')
+time_taken = np.load('time_taken.npy')
+won = np.load('won.npy')
+lost = np.load('lost.npy')
+end_position = np.load('end_position.npy')
+
 
 def mean_confidence_interval(array):
     mean = np.mean(array)
@@ -14,3 +15,5 @@ def mean_confidence_interval(array):
 
     confidence_interval = (mean - critical_value * standard_error, mean + critical_value * standard_error)
     return confidence_interval
+
+print(mean_confidence_interval())
